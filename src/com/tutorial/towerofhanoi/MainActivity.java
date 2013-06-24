@@ -21,6 +21,8 @@ import java.io.InputStream;
 import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.texture.region.TextureRegionFactory;
 
+import org.andengine.entity.sprite.Sprite;
+
 public class MainActivity extends SimpleBaseGameActivity {
 	
 	private static int CAMERA_WIDTH = 800;
@@ -107,7 +109,11 @@ public class MainActivity extends SimpleBaseGameActivity {
 	@Override
 	protected Scene onCreateScene() {
 		// TODO Auto-generated method stub
-		return null;
+		// 1 - Create new scene
+		final Scene scene = new Scene();
+		Sprite backgroundSprite = new Sprite(0, 0, this.mBackgroundTextureRegion, getVertexBufferObjectManager());
+		scene.attachChild(backgroundSprite);
+		return scene;
 	}
 
 }
