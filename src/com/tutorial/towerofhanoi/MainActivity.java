@@ -23,6 +23,10 @@ import org.andengine.opengl.texture.region.TextureRegionFactory;
 
 import org.andengine.entity.sprite.Sprite;
 
+import java.util.Stack;
+
+import org.andengine.input.touch.TouchEvent;
+
 public class MainActivity extends SimpleBaseGameActivity {
 	
 	private static int CAMERA_WIDTH = 800;
@@ -31,6 +35,8 @@ public class MainActivity extends SimpleBaseGameActivity {
 	private ITextureRegion mBackgroundTextureRegion, mTowerTextureRegion, mRing1, mRing2, mRing3;
 	
 	private Sprite mTower1, mTower2, mTower3;
+	
+	private Stack mStack1, mStack2, mStack3;
 
 	@Override
 	public EngineOptions onCreateEngineOptions() {
@@ -89,6 +95,11 @@ public class MainActivity extends SimpleBaseGameActivity {
 		    this.mRing2 = TextureRegionFactory.extractFromTexture(ring2);
 		    this.mRing3 = TextureRegionFactory.extractFromTexture(ring3);
 		    
+		    // 4 - Create the stacks
+		    this.mStack1 = new Stack();
+		    this.mStack2 = new Stack();
+		    this.mStack3 = new Stack();
+		    
 		} catch (IOException e) {
 		    Debug.e(e);
 		}
@@ -112,14 +123,70 @@ public class MainActivity extends SimpleBaseGameActivity {
 		scene.attachChild(mTower3);
 		
 		// 3 - Create the rings
-		Ring ring1 = new Ring(1, 139, 174, this.mRing1, getVertexBufferObjectManager());
-		Ring ring2 = new Ring(2, 118, 212, this.mRing2, getVertexBufferObjectManager());
-		Ring ring3 = new Ring(3, 97, 255, this.mRing3, getVertexBufferObjectManager());
+		Ring ring1 = new Ring(1, 139, 174, this.mRing1, getVertexBufferObjectManager()) {
+		    @Override
+		    public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+		        if (((Ring) this.getmStack().peek()).getmWeight() != this.getmWeight())
+		            return false;
+		        this.setPosition(pSceneTouchEvent.getX() - this.getWidth() / 2, 
+		            pSceneTouchEvent.getY() - this.getHeight() / 2);
+		        if (pSceneTouchEvent.getAction() == TouchEvent.ACTION_UP) {
+		            checkForCollisionsWithTowers(this);
+		        }
+		        return true;
+		    }
+		};
+		Ring ring2 = new Ring(2, 118, 212, this.mRing2, getVertexBufferObjectManager()) {
+		    @Override
+		    public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+		        if (((Ring) this.getmStack().peek()).getmWeight() != this.getmWeight())
+		            return false;
+		        this.setPosition(pSceneTouchEvent.getX() - this.getWidth() / 2, 
+		            pSceneTouchEvent.getY() - this.getHeight() / 2);
+		        if (pSceneTouchEvent.getAction() == TouchEvent.ACTION_UP) {
+		            checkForCollisionsWithTowers(this);
+		        }
+		        return true;
+		    }
+		};
+		Ring ring3 = new Ring(3, 97, 255, this.mRing3, getVertexBufferObjectManager()) {
+		    @Override
+		    public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+		        if (((Ring) this.getmStack().peek()).getmWeight() != this.getmWeight())
+		            return false;
+		        this.setPosition(pSceneTouchEvent.getX() - this.getWidth() / 2, 
+		            pSceneTouchEvent.getY() - this.getHeight() / 2);
+		        if (pSceneTouchEvent.getAction() == TouchEvent.ACTION_UP) {
+		            checkForCollisionsWithTowers(this);
+		        }
+		        return true;
+		    }
+		};
 		scene.attachChild(ring1);
 		scene.attachChild(ring2);
 		scene.attachChild(ring3);
 		
+		// 4 - Add all rings to stack one
+		this.mStack1.add(ring3);
+		this.mStack1.add(ring2);
+		this.mStack1.add(ring1);
+		// 5 - Initialize starting position for each ring
+		ring1.setmStack(mStack1);
+		ring2.setmStack(mStack1);
+		ring3.setmStack(mStack1);
+		ring1.setmTower(mTower1);
+		ring2.setmTower(mTower1);
+		ring3.setmTower(mTower1);
+		// 6 - Add touch handlers
+		scene.registerTouchArea(ring1);
+		scene.registerTouchArea(ring2);
+		scene.registerTouchArea(ring3);
+		scene.setTouchAreaBindingOnActionDownEnabled(true);
+		
 		return scene;
+	}
+	
+	private void checkForCollisionsWithTowers(Ring ring) {
 	}
 
 }
