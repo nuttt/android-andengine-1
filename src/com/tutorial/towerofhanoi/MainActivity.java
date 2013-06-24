@@ -18,10 +18,15 @@ import org.andengine.util.debug.Debug;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.andengine.opengl.texture.region.ITextureRegion;
+import org.andengine.opengl.texture.region.TextureRegionFactory;
+
 public class MainActivity extends SimpleBaseGameActivity {
 	
 	private static int CAMERA_WIDTH = 800;
 	private static int CAMERA_HEIGHT = 480;
+	
+	private ITextureRegion mBackgroundTextureRegion, mTowerTextureRegion, mRing1, mRing2, mRing3;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -85,9 +90,18 @@ public class MainActivity extends SimpleBaseGameActivity {
 		    ring1.load();
 		    ring2.load();
 		    ring3.load();
+		    
+		    // 3 - Set up texture regions
+		    this.mBackgroundTextureRegion = TextureRegionFactory.extractFromTexture(backgroundTexture);
+		    this.mTowerTextureRegion = TextureRegionFactory.extractFromTexture(towerTexture);
+		    this.mRing1 = TextureRegionFactory.extractFromTexture(ring1);
+		    this.mRing2 = TextureRegionFactory.extractFromTexture(ring2);
+		    this.mRing3 = TextureRegionFactory.extractFromTexture(ring3);
+		    
 		} catch (IOException e) {
 		    Debug.e(e);
 		}
+		
 	}
 
 	@Override
