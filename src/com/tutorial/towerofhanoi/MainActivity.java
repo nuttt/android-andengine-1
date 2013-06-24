@@ -187,6 +187,37 @@ public class MainActivity extends SimpleBaseGameActivity {
 	}
 	
 	private void checkForCollisionsWithTowers(Ring ring) {
+	    Stack stack = null;
+	    Sprite tower = null;
+	    if (ring.collidesWith(mTower1) && (mStack1.size() == 0 ||             
+	            ring.getmWeight() < ((Ring) mStack1.peek()).getmWeight())) {
+	        stack = mStack1;
+	        tower = mTower1;
+	    } else if (ring.collidesWith(mTower2) && (mStack2.size() == 0 || 
+	            ring.getmWeight() < ((Ring) mStack2.peek()).getmWeight())) {
+	        stack = mStack2;
+	        tower = mTower2;
+	    } else if (ring.collidesWith(mTower3) && (mStack3.size() == 0 || 
+	            ring.getmWeight() < ((Ring) mStack3.peek()).getmWeight())) {
+	        stack = mStack3;
+	        tower = mTower3;
+	    } else {
+	        stack = ring.getmStack();
+	        tower = ring.getmTower();
+	    }
+	    ring.getmStack().remove(ring);
+	    if (stack != null && tower !=null && stack.size() == 0) {
+	        ring.setPosition(tower.getX() + tower.getWidth()/2 - 
+	            ring.getWidth()/2, tower.getY() + tower.getHeight() - 
+	            ring.getHeight());
+	    } else if (stack != null && tower !=null && stack.size() > 0) {
+	        ring.setPosition(tower.getX() + tower.getWidth()/2 - 
+	            ring.getWidth()/2, ((Ring) stack.peek()).getY() - 
+	            ring.getHeight());
+	    }
+	    stack.add(ring);
+	    ring.setmStack(stack);
+	    ring.setmTower(tower);
 	}
 
 }
