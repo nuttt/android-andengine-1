@@ -32,7 +32,7 @@ public class MainActivity extends SimpleBaseGameActivity {
 	private static int CAMERA_WIDTH = 800;
 	private static int CAMERA_HEIGHT = 480;
 	
-	private ITextureRegion mBackgroundTextureRegion, mTowerTextureRegion, mRing1, mRing2, mRing3;
+	private ITextureRegion mBackgroundTextureRegion, mTowerTextureRegion, mRing0, mRing1, mRing2, mRing3;
 	
 	private Sprite mTower1, mTower2, mTower3;
 	
@@ -63,6 +63,12 @@ public class MainActivity extends SimpleBaseGameActivity {
 		            return getAssets().open("gfx/tower.png");
 		        }
 		    });
+		    ITexture ring0 = new BitmapTexture(this.getTextureManager(), new IInputStreamOpener() {
+		        @Override
+		        public InputStream open() throws IOException {
+		            return getAssets().open("gfx/ring0.png");
+		        }
+		    });
 		    ITexture ring1 = new BitmapTexture(this.getTextureManager(), new IInputStreamOpener() {
 		        @Override
 		        public InputStream open() throws IOException {
@@ -84,6 +90,7 @@ public class MainActivity extends SimpleBaseGameActivity {
 		    // 2 - Load bitmap textures into VRAM
 		    backgroundTexture.load();
 		    towerTexture.load();
+		    ring0.load();
 		    ring1.load();
 		    ring2.load();
 		    ring3.load();
@@ -91,6 +98,7 @@ public class MainActivity extends SimpleBaseGameActivity {
 		    // 3 - Set up texture regions
 		    this.mBackgroundTextureRegion = TextureRegionFactory.extractFromTexture(backgroundTexture);
 		    this.mTowerTextureRegion = TextureRegionFactory.extractFromTexture(towerTexture);
+		    this.mRing0 = TextureRegionFactory.extractFromTexture(ring0);
 		    this.mRing1 = TextureRegionFactory.extractFromTexture(ring1);
 		    this.mRing2 = TextureRegionFactory.extractFromTexture(ring2);
 		    this.mRing3 = TextureRegionFactory.extractFromTexture(ring3);
@@ -123,6 +131,19 @@ public class MainActivity extends SimpleBaseGameActivity {
 		scene.attachChild(mTower3);
 		
 		// 3 - Create the rings
+		Ring ring0 = new Ring(0, 149, 150, this.mRing0, getVertexBufferObjectManager()) {
+		    @Override
+		    public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+		        if (((Ring) this.getmStack().peek()).getmWeight() != this.getmWeight())
+		            return false;
+		        this.setPosition(pSceneTouchEvent.getX() - this.getWidth() / 2, 
+		            pSceneTouchEvent.getY() - this.getHeight() / 2);
+		        if (pSceneTouchEvent.getAction() == TouchEvent.ACTION_UP) {
+		            checkForCollisionsWithTowers(this);
+		        }
+		        return true;
+		    }
+		};
 		Ring ring1 = new Ring(1, 139, 174, this.mRing1, getVertexBufferObjectManager()) {
 		    @Override
 		    public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
@@ -162,6 +183,7 @@ public class MainActivity extends SimpleBaseGameActivity {
 		        return true;
 		    }
 		};
+		scene.attachChild(ring0);
 		scene.attachChild(ring1);
 		scene.attachChild(ring2);
 		scene.attachChild(ring3);
@@ -170,14 +192,18 @@ public class MainActivity extends SimpleBaseGameActivity {
 		this.mStack1.add(ring3);
 		this.mStack1.add(ring2);
 		this.mStack1.add(ring1);
+		this.mStack1.add(ring0);
 		// 5 - Initialize starting position for each ring
+		ring0.setmStack(mStack1);
 		ring1.setmStack(mStack1);
 		ring2.setmStack(mStack1);
 		ring3.setmStack(mStack1);
+		ring0.setmTower(mTower1);
 		ring1.setmTower(mTower1);
 		ring2.setmTower(mTower1);
 		ring3.setmTower(mTower1);
 		// 6 - Add touch handlers
+		scene.registerTouchArea(ring0);
 		scene.registerTouchArea(ring1);
 		scene.registerTouchArea(ring2);
 		scene.registerTouchArea(ring3);
