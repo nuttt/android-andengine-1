@@ -29,6 +29,8 @@ public class MainActivity extends SimpleBaseGameActivity {
 	private static int CAMERA_HEIGHT = 480;
 	
 	private ITextureRegion mBackgroundTextureRegion, mTowerTextureRegion, mRing1, mRing2, mRing3;
+	
+	private Sprite mTower1, mTower2, mTower3;
 
 	@Override
 	public EngineOptions onCreateEngineOptions() {
@@ -100,6 +102,15 @@ public class MainActivity extends SimpleBaseGameActivity {
 		final Scene scene = new Scene();
 		Sprite backgroundSprite = new Sprite(0, 0, this.mBackgroundTextureRegion, getVertexBufferObjectManager());
 		scene.attachChild(backgroundSprite);
+		
+		// 2 - Add the towers
+		mTower1 = new Sprite(192, 63, this.mTowerTextureRegion, getVertexBufferObjectManager());
+		mTower2 = new Sprite(400, 63, this.mTowerTextureRegion, getVertexBufferObjectManager());
+		mTower3 = new Sprite(604, 63, this.mTowerTextureRegion, getVertexBufferObjectManager());
+		scene.attachChild(mTower1);
+		scene.attachChild(mTower2);
+		scene.attachChild(mTower3);
+		
 		return scene;
 	}
 
