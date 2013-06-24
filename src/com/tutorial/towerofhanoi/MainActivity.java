@@ -6,6 +6,17 @@ import android.view.Menu;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.entity.scene.Scene;
+import org.andengine.engine.camera.Camera;
+import org.andengine.engine.options.ScreenOrientation;
+import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
+
+import org.andengine.opengl.texture.ITexture;
+import org.andengine.opengl.texture.bitmap.BitmapTexture;
+import org.andengine.util.adt.io.in.IInputStreamOpener;
+import org.andengine.util.debug.Debug;
+ 
+import java.io.IOException;
+import java.io.InputStream;
 
 public class MainActivity extends SimpleBaseGameActivity {
 	
@@ -36,7 +47,47 @@ public class MainActivity extends SimpleBaseGameActivity {
 	@Override
 	protected void onCreateResources() {
 		// TODO Auto-generated method stub
-		
+		try {
+		    // 1 - Set up bitmap textures
+		    ITexture backgroundTexture = new BitmapTexture(this.getTextureManager(), new IInputStreamOpener() {
+		        @Override
+		        public InputStream open() throws IOException {
+		            return getAssets().open("gfx/background.png");
+		        }
+		    });
+		    ITexture towerTexture = new BitmapTexture(this.getTextureManager(), new IInputStreamOpener() {
+		        @Override
+		        public InputStream open() throws IOException {
+		            return getAssets().open("gfx/tower.png");
+		        }
+		    });
+		    ITexture ring1 = new BitmapTexture(this.getTextureManager(), new IInputStreamOpener() {
+		        @Override
+		        public InputStream open() throws IOException {
+		            return getAssets().open("gfx/ring1.png");
+		        }
+		    });
+		    ITexture ring2 = new BitmapTexture(this.getTextureManager(), new IInputStreamOpener() {
+		        @Override
+		        public InputStream open() throws IOException {
+		            return getAssets().open("gfx/ring2.png");
+		        }
+		    });
+		    ITexture ring3 = new BitmapTexture(this.getTextureManager(), new IInputStreamOpener() {
+		        @Override
+		        public InputStream open() throws IOException {
+		            return getAssets().open("gfx/ring3.png");
+		        }
+		    });
+		    // 2 - Load bitmap textures into VRAM
+		    backgroundTexture.load();
+		    towerTexture.load();
+		    ring1.load();
+		    ring2.load();
+		    ring3.load();
+		} catch (IOException e) {
+		    Debug.e(e);
+		}
 	}
 
 	@Override
