@@ -111,6 +111,14 @@ public class MainActivity extends SimpleBaseGameActivity {
 		scene.attachChild(mTower2);
 		scene.attachChild(mTower3);
 		
+		// 3 - Create the rings
+		Ring ring1 = new Ring(1, 139, 174, this.mRing1, getVertexBufferObjectManager());
+		Ring ring2 = new Ring(2, 118, 212, this.mRing2, getVertexBufferObjectManager());
+		Ring ring3 = new Ring(3, 97, 255, this.mRing3, getVertexBufferObjectManager());
+		scene.attachChild(ring1);
+		scene.attachChild(ring2);
+		scene.attachChild(ring3);
+		
 		return scene;
 	}
 
