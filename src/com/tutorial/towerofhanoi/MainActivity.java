@@ -1,46 +1,54 @@
 package com.tutorial.towerofhanoi;
 
-import android.os.Bundle;
-import android.app.Activity;
-import android.view.Menu;
-import org.andengine.ui.activity.SimpleBaseGameActivity;
-import org.andengine.engine.options.EngineOptions;
-import org.andengine.entity.scene.Scene;
-import org.andengine.engine.camera.Camera;
-import org.andengine.engine.options.ScreenOrientation;
-import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
-
-import org.andengine.opengl.texture.ITexture;
-import org.andengine.opengl.texture.bitmap.BitmapTexture;
-import org.andengine.util.adt.io.in.IInputStreamOpener;
-import org.andengine.util.debug.Debug;
- 
 import java.io.IOException;
 import java.io.InputStream;
-
-import org.andengine.opengl.texture.region.ITextureRegion;
-import org.andengine.opengl.texture.region.TextureRegionFactory;
-
-import org.andengine.entity.sprite.Sprite;
-
 import java.util.Stack;
 
+import org.andengine.engine.camera.Camera;
+import org.andengine.engine.options.EngineOptions;
+import org.andengine.engine.options.ScreenOrientation;
+import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
+import org.andengine.entity.scene.Scene;
+import org.andengine.entity.sprite.Sprite;
+import org.andengine.entity.text.Text;
+import org.andengine.entity.text.TextOptions;
 import org.andengine.input.touch.TouchEvent;
+import org.andengine.opengl.font.Font;
+import org.andengine.opengl.font.FontFactory;
+import org.andengine.opengl.texture.ITexture;
+import org.andengine.opengl.texture.bitmap.BitmapTexture;
+import org.andengine.opengl.texture.region.ITextureRegion;
+import org.andengine.opengl.texture.region.TextureRegionFactory;
+import org.andengine.ui.activity.SimpleBaseGameActivity;
+import org.andengine.util.HorizontalAlign;
+import org.andengine.util.adt.io.in.IInputStreamOpener;
+import org.andengine.util.color.Color;
+import org.andengine.util.debug.Debug;
+
+import android.graphics.Typeface;
+import android.util.Log;
 
 public class MainActivity extends SimpleBaseGameActivity {
 	
 	private static int CAMERA_WIDTH = 800;
 	private static int CAMERA_HEIGHT = 480;
 	
+	private static int count = 0;
 	private ITextureRegion mBackgroundTextureRegion, mTowerTextureRegion, mRing0, mRing1, mRing2, mRing3;
 	
 	private Sprite mTower1, mTower2, mTower3;
 	
 	private Stack mStack1, mStack2, mStack3;
+	private Font mFont;
+	private Font mFont2;
+	private Text moveText;
+	private Text winText;
+	private SimpleBaseGameActivity activity;
 
 	@Override
 	public EngineOptions onCreateEngineOptions() {
 		// TODO Auto-generated method stub
+		activity = this;
 		final Camera camera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
 		return new EngineOptions(true, ScreenOrientation.LANDSCAPE_FIXED, 
 		    new RatioResolutionPolicy(CAMERA_WIDTH, CAMERA_HEIGHT), camera);
@@ -107,6 +115,12 @@ public class MainActivity extends SimpleBaseGameActivity {
 		    this.mStack1 = new Stack();
 		    this.mStack2 = new Stack();
 		    this.mStack3 = new Stack();
+		    
+		    // Load font
+		    this.mFont = FontFactory.create(this.getFontManager(), this.getTextureManager(), 256, 256, Typeface.create(Typeface.DEFAULT, Typeface.BOLD), 32);
+		    this.mFont2 = FontFactory.create(this.getFontManager(), this.getTextureManager(), 256, 256, Typeface.create(Typeface.DEFAULT, Typeface.BOLD), 96);
+			this.mFont.load();
+			this.mFont2.load();
 		    
 		} catch (IOException e) {
 		    Debug.e(e);
@@ -209,10 +223,19 @@ public class MainActivity extends SimpleBaseGameActivity {
 		scene.registerTouchArea(ring3);
 		scene.setTouchAreaBindingOnActionDownEnabled(true);
 		
+		// Move count
+		this.moveText = new Text(50, 30, this.mFont, "move:" + count + "     ", new TextOptions(HorizontalAlign.CENTER), getVertexBufferObjectManager());
+		scene.attachChild(moveText);
+		
+		// Winning Text
+		this.winText = new Text(210, 300, this.mFont2, "                 ", new TextOptions(HorizontalAlign.CENTER), getVertexBufferObjectManager());
+		this.winText.setColor(new Color(255, 255, 255));
+		scene.attachChild(winText);
 		return scene;
 	}
 	
 	private void checkForCollisionsWithTowers(Ring ring) {
+		Stack oldStack = ring.getmStack();
 	    Stack stack = null;
 	    Sprite tower = null;
 	    if (ring.collidesWith(mTower1) && (mStack1.size() == 0 ||             
@@ -242,6 +265,14 @@ public class MainActivity extends SimpleBaseGameActivity {
 	            ring.getHeight());
 	    }
 	    stack.add(ring);
+	    if(stack != oldStack){
+	    	count++;
+	    	Log.d("count", ""+count);
+	    	this.moveText.setText("move: " + count);
+	    }
+	    if(mStack3.size() >= 4){
+	    	this.winText.setText("You Win!!");
+	    }
 	    ring.setmStack(stack);
 	    ring.setmTower(tower);
 	}
